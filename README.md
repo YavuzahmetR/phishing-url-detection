@@ -1,6 +1,6 @@
 # PhiUSIIL Phishing URL Detection & Feature Analytics
 
-This project delivers an industrial-grade, leak-free machine learning framework designed to detect phishing URLs using the **PhiUSIIL Phishing URL Dataset**. Unlike naive scraping models that easily cheat by analyzing raw HTML code from cached/dead pages, this system forces artificial intelligence to strictly evaluate **lightweight, network, and structural-level static URL elements**. This ensures ultra-fast, robust inference on live enterprise traffic—even when malicious endpoints are offline or guarded by anti-bot mechanics.
+This project is a machine learning framework designed to detect phishing URLs using the **PhiUSIIL Phishing URL Dataset**. Unlike naive scraping models that easily cheat by analyzing raw HTML code from cached/dead pages, this system forces artificial intelligence to strictly evaluate **lightweight, network, and structural-level static URL elements**. This ensures ultra-fast, robust inference on live enterprise traffic—even when malicious endpoints are offline or guarded by anti-bot mechanics.
 
 ---
 

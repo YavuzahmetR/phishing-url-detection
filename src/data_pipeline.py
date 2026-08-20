@@ -1,6 +1,3 @@
-"""
-Data splitting and parsing sub-module ensuring leak-free partitioning.
-"""
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from src.config import DATA_PATH, URL_FEATURES, RANDOM_STATE, TEST_SIZE

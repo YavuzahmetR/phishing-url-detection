@@ -203,4 +203,4 @@ The following results were obtained from a manually verified test using real sam
 This confirms that the API, model, and data pipeline are fully synchronized and production-ready.
 
 ---
-*Developed with a focus on zero data leakage, robust scaling, and deployment-ready API design.*
+

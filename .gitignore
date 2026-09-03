@@ -4,3 +4,8 @@ __pycache__/
 
 models/
 *.pkl
+
+# Data files
+data/raw/
+data/interim/
+data/processed/

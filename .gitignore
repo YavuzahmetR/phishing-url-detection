@@ -9,3 +9,4 @@ models/
 data/raw/
 data/interim/
 data/processed/
+!src/phishing_guard/data/

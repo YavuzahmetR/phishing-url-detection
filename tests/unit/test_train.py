@@ -9,25 +9,31 @@ def test_url_only_lightgbm_pipeline_optimize_and_predict():
     1. Hata vermeden optimize_and_fit çalışabilmelidir (küçük veriyle).
     2. predict ve predict_proba adımlarında doğru boyutlarda numpy dizileri üretmelidir.
     """
+    # Her sınıftan en az 3 örnek olacak şekilde veriyi çoğalt
     mock_train_df = pd.DataFrame({
         "URL": [
             "https://paypal-secure-login.com",
             "https://google.com",
             "http://verify-bank-account.net",
-            "https://github.com"
+            "https://github.com",
+            "https://example.com",
+            "https://test.com"
         ],
         "registrable_domain": [
             "paypal-secure-login.com",
             "google.com",
             "verify-bank-account.net",
-            "github.com"
+            "github.com",
+            "example.com",
+            "test.com"
         ]
     })
-    mock_labels = np.array([1, 0, 1, 0])  # V2: 1=Phishing, 0=Legitimate
+    # 3 phishing (1), 3 legitimate (0)
+    mock_labels = np.array([1, 0, 1, 0, 1, 0])
 
     model = URLOnlyLightGBMModel(random_seed=42)
 
-    # optimize_and_fit çalıştır (n_trials=2 hızlı olsun)
+    # use_groups=False ile çalıştır (StratifiedKFold kullanır)
     model.optimize_and_fit(mock_train_df, mock_labels, n_trials=1, use_groups=False)
 
     # Predict test

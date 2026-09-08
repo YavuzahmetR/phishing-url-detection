@@ -1,51 +1,57 @@
-import joblib
-import pandas as pd
-from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
-from app.schemas import URLFeaturesInput, PredictionOutput
-from src.config import MODEL_PATH, URL_FEATURES
+from pydantic import BaseModel, validator
+import pandas as pd
+import joblib
+import os
+from src.phishing_guard.features.url_lexical import extract_url_only_features
 
-model_pipeline = None
+app = FastAPI(title="Phishing URL Guard V2")
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    global model_pipeline
+# Modeli yükle (environment variable ile override edilebilir)
+MODEL_PATH = os.getenv("MODEL_PATH", "models/url_only_lgb_v2.0.0.joblib")
+
+try:
+    artifact = joblib.load(MODEL_PATH)
+    model = artifact['model']
+    threshold = artifact['threshold']
+    print(f"✅ Model loaded from {MODEL_PATH}, threshold={threshold:.4f}")
+except Exception as e:
+    print(f"❌ Failed to load model: {e}")
+    model = None
+    threshold = 0.5
+
+class URLInput(BaseModel):
+    url: str
+
+    @validator('url')
+    def validate_url(cls, v):
+        if len(v) > 2048:
+            raise ValueError("URL too long")
+        return v
+
+class PredictionResponse(BaseModel):
+    is_phishing: bool
+    probability: float
+    threshold: float
+    model_version: str = "v2.0.0"
+
+@app.post("/predict", response_model=PredictionResponse)
+def predict(input: URLInput):
+    if model is None:
+        raise HTTPException(status_code=503, detail="Model not loaded")
     try:
-        model_pipeline = joblib.load(MODEL_PATH)
-        print("Production ML model successfully loaded into memory.")
+        df = pd.DataFrame({"URL": [input.url]})
+        features = extract_url_only_features(df)
+        proba = model.predict_proba(features)[0, 1]
+        is_phishing = proba >= threshold
+        return PredictionResponse(
+            is_phishing=bool(is_phishing),
+            probability=float(proba),
+            threshold=float(threshold)
+        )
     except Exception as e:
-        print(f"Error loading model: {e}")
-    yield
-
-app = FastAPI(
-    title="Phishing URL Threat Detection API",
-    version="1.0.0",
-    lifespan=lifespan
-)
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/health")
-def health_check():
-    return {"status": "healthy", "model_loaded": model_pipeline is not None}
-
-@app.post("/predict", response_model=PredictionOutput)
-def predict_phishing(input_data: URLFeaturesInput):
-    if model_pipeline is None:
-        raise HTTPException(status_code=503, detail="Model artifact is not loaded.")
-    
-    data_dict = input_data.model_dump()
-    synchronized_data = {feature: [data_dict[feature]] for feature in URL_FEATURES}
-    input_df = pd.DataFrame(synchronized_data, columns=URL_FEATURES).astype(float)
-    
-    prediction = int(model_pipeline.predict(input_df)[0])
-    probabilities = model_pipeline.predict_proba(input_df)[0]
-    
-    # 0 -> Legitimate, 1 -> Phishing
-    is_phishing = bool(prediction == 1)
-    
-    confidence = float(probabilities[1] if is_phishing else probabilities[0])
-    
-    return PredictionOutput(
-        is_phishing=is_phishing,
-        threat_label="Phishing" if is_phishing else "Legitimate",
-        confidence_score=round(confidence, 4)
-    )
+def health():
+    return {"status": "ok"}

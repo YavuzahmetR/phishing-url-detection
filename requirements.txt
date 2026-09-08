@@ -9,3 +9,6 @@ shap>=0.42.0
 fastapi>=0.100.0
 uvicorn>=0.22.0
 pydantic>=2.0.0
+tldextract>=5.0.0    
+ruff>=0.5.0          
+pytest>=8.0.0        

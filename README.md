@@ -22,15 +22,11 @@ To guarantee real-world generalization and avoid the **"Perfect Score Trap" (Dat
 
 ## Target Variable & Inference Logic (Important)
 
-The raw `PhiUSIIL` dataset uses the following label encoding:
-- `0` -> **Legitimate**
-- `1` -> **Phishing**
-
-`src/data_pipeline.py` **does NOT perform any label mapping or inversion**. The model learns the dataset in its original form. Therefore, the API layer (`app/main.py`) interprets the model output as follows:
-- `prediction == 1` → **Phishing**
-- `prediction == 0` → **Legitimate**
+**Label mapping:** Source `Label` = 0 means **Phishing**, 1 means **Legitimate**.  
+Internally, we transform to `is_phishing` where `1` = Phishing, `0` = Legitimate.
 
 This mapping is locked and tested to avoid any class-index confusion during inference.
+
 
 ---
 

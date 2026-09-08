@@ -11,11 +11,13 @@ def calibrate_model(model, X_calib, y_calib, method='sigmoid'):
         y_calib: calibration labels (1=phishing)
         method: 'sigmoid' (Platt) or 'isotonic'
     Returns:
-        calibrated_model: CalibratedClassifierCV instance (cv='prefit')
+        calibrated_model: CalibratedClassifierCV instance (ensemble=False)
     """
-    calibrated = CalibratedClassifierCV(model, method= method, cv='prefit')
+    # Scikit-learn v1.5+ ve üzeri için cv='prefit' yerine ensemble=False kullanılır
+    calibrated = CalibratedClassifierCV(estimator=model, method=method, cv=None, ensemble=False)
     calibrated.fit(X_calib, y_calib)
     return calibrated
+
 
 def select_threshold(calibrated_model, X_val, y_val, recall_target = 0.95):
     """

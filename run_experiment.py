@@ -56,14 +56,13 @@ def main():
     print("\n⚡ 3. Model: URL-Only LightGBM Optuna Motoruyla Eğitiliyor (14 Güvenli Özellik)...")
 
     # Bilgisayarının işlemci gücüne göre n_jobs değerini artırabilirsin (Örn: n_jobs=4 veya -1)
-    # Hızlı bitmesi için varsayılan olarak n_jobs=1 kalabilir.
     lgb_model = URLOnlyLightGBMModel(random_seed=42, n_jobs=1)
 
     # Optuna ile hiperparametre arama + CV
     lgb_model.optimize_and_fit(
         train_df,
         y_train,
-        n_trials=30,          # Hızlı sonuç için 10; daha iyi sonuç için 20-30 yapılabilir
+        n_trials=30,          # Stabilite ve başarı için 30 trial idealdir
         use_groups=True       # Domain bazlı sızıntı koruması
     )
 
@@ -73,31 +72,65 @@ def main():
         print(f"   {key}: {value}")
     print(f"🥇 Optuna CV PR-AUC Skoru: {lgb_model.best_value:.4f}")
 
-    # Validasyon seti üzerinde tahmin ve değerlendirme
+    # Validasyon seti üzerinde tahmin ve değerlendirme (Kalibrasyon Öncesi)
     lgb_preds = lgb_model.predict(val_df)
     lgb_proba = lgb_model.predict_proba(val_df)[:, 1]
 
-    print("\n--- URL-Only LightGBM Optuna & CV Sonuçları (Validation) ---")
+    print("\n--- URL-Only LightGBM Optuna & CV Sonuçları (Validation - Kalibrasyon Öncesi) ---")
     print(classification_report(y_val, lgb_preds, target_names=["Legitimate", "Phishing"]))
 
-    # PR-AUC skorunu da raporla
     val_pr_auc = average_precision_score(y_val, lgb_proba)
     print(f"🔎 Validation PR-AUC Skoru: {val_pr_auc:.4f}")
 
     # =========================================================================
-    # Opsiyonel: Locked Test Seti Değerlendirmesi
+    # MODEL KALIBRASYONU VE THRESHOLD SEÇİMİ
+    # =========================================================================
+    print("\n🎯 Kalibrasyon ve threshold seçimi yapılıyor...")
+    
+    # Calibration ve validation setlerinin özelliklerini çıkar
+    X_calib = lgb_model.transform(calib_df)
+    y_calib = calib_df["is_phishing"].to_numpy()
+    X_val_feats = lgb_model.transform(val_df)
+    
+    from src.phishing_guard.modeling.calibrate import calibrate_model, select_threshold
+    calibrated_lgb = calibrate_model(lgb_model.model, X_calib, y_calib, method='sigmoid')
+    
+    best_threshold, cal_metrics = select_threshold(calibrated_lgb, X_val_feats, y_val, recall_target=0.95)
+    print(f"✅ Seçilen threshold: {best_threshold:.4f}")
+    print(f"   Validation'da bu threshold ile: Precision={cal_metrics['precision']:.3f}, Recall={cal_metrics['recall']:.3f}, F1={cal_metrics['f1']:.3f}")
+
+    # =========================================================================
+    # Opsiyonel: Locked Test Seti Değerlendirmesi (Kalibre Edilmiş Model ile)
     # =========================================================================
     if test_df is not None and not test_df.empty:
         print("\n🔒 Locked Test Seti üzerinde final değerlendirme yapılıyor...")
         y_test = test_df["is_phishing"].to_numpy()
-        test_preds = lgb_model.predict(test_df)
-        test_proba = lgb_model.predict_proba(test_df)[:, 1]
+        
+        # Test verisinin özelliklerini çıkarıyoruz
+        X_test_feats = lgb_model.transform(test_df)
+        
+        # Kalibre edilmiş modelden olasılıkları alıp seçilen threshold ile karar veriyoruz
+        test_proba = calibrated_lgb.predict_proba(X_test_feats)[:, 1]
+        test_preds = (test_proba >= best_threshold).astype(int)
 
-        print("\n--- URL-Only LightGBM Test Seti Sonuçları ---")
+        print("\n--- URL-Only LightGBM Test Seti Sonuçları (Kalibre Edilmiş & Eşik Ayarlı) ---")
         print(classification_report(y_test, test_preds, target_names=["Legitimate", "Phishing"]))
 
         test_pr_auc = average_precision_score(y_test, test_proba)
         print(f"🔎 Test PR-AUC Skoru: {test_pr_auc:.4f}")
+
+    # =========================================================================
+    # MODEL ARTEACT'INI KAYDET
+    # =========================================================================
+    print("\n💾 Model artefact'ı kaydediliyor...")
+    from src.phishing_guard.modeling.artifact import save_model_artifact
+    artifact_path = save_model_artifact(
+        model=calibrated_lgb,  # kalibre edilmiş model
+        feature_columns=lgb_model.feature_columns,
+        threshold=best_threshold,
+        version="v2.0.0"
+    )
+    print(f"📁 Model kaydedildi: {artifact_path}")
 
 
 if __name__ == "__main__":

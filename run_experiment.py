@@ -56,7 +56,7 @@ def main():
     print("\n⚡ 3. Model: URL-Only LightGBM Optuna Motoruyla Eğitiliyor (14 Güvenli Özellik)...")
 
     # Bilgisayarının işlemci gücüne göre n_jobs değerini artırabilirsin (Örn: n_jobs=4 veya -1)
-    lgb_model = URLOnlyLightGBMModel(random_seed=42, n_jobs=1)
+    lgb_model = URLOnlyLightGBMModel(random_seed=42, n_jobs=-1)
 
     # Optuna ile hiperparametre arama + CV
     lgb_model.optimize_and_fit(

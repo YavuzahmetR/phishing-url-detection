@@ -1,6 +1,6 @@
-# PhiUSIIL Phishing URL Detection & Feature Analytics
+# PhiUSIIL Phishing URL Detection & Feature Analytics (V2)
 
-This project is a machine learning framework designed to detect phishing URLs using the **PhiUSIIL Phishing URL Dataset**. Unlike naive scraping models that easily cheat by analyzing raw HTML code from cached/dead pages, this system forces artificial intelligence to strictly evaluate **lightweight, network, and structural-level static URL elements**. This ensures ultra-fast, robust inference on live enterprise traffic—even when malicious endpoints are offline or guarded by anti-bot mechanics.
+This project is an advanced machine learning framework designed to detect phishing URLs using the **PhiUSIIL Phishing URL Dataset**. Unlike naive scraping models that easily cheat by analyzing raw HTML code from cached/dead pages, this system forces artificial intelligence to strictly evaluate **lightweight, network, and structural-level static URL elements**. This ensures ultra-fast, robust inference on live enterprise traffic—even when malicious endpoints are offline or guarded by anti-bot mechanics.
 
 ---
 
@@ -27,156 +27,103 @@ Internally, we transform to `is_phishing` where `1` = Phishing, `0` = Legitimate
 
 This mapping is locked and tested to avoid any class-index confusion during inference.
 
-
 ---
 
 ## Preprocessing Strategy (Scaling)
 
-Instead of a global `RobustScaler`, a `ColumnTransformer` is used during training. The reason is simple: binary features such as `IsHTTPS`, `IsDomainIP`, and `HasObfuscation` often have highly skewed distributions. A global scaler can shrink their variance to zero, effectively deleting critical security signals.
-
-Therefore, only continuous numerical variables are scaled, while binary flags are passed through **untouched** using `passthrough`. This preserves the full discriminative power of every feature.
+Instead of a global `RobustScaler`, a `ColumnTransformer` is used during training. Only continuous numerical variables are scaled, while binary flags are passed through **untouched** using `passthrough`. This preserves the full discriminative power of every feature like `IsHTTPS`.
 
 ---
 
-## Exploratory Data Analysis (EDA) & Multicollinearity
+## Architectural Duel: Baselines vs. V2 Champion
 
-A strict mathematical filter was built to evaluate feature overlaps. Highly correlated dimensions exceeding an absolute threshold of **0.85** were cross-referenced with their target dependency; the weaker structural predictor was automatically eliminated to minimize model variance.
+To justify the engineering complexity of the V2 pipeline, a strict benchmarking duel was executed across three evolving architectural tiers on a locked validation partition:
 
-### Heatmap Visualization Core
-```python
-import matplotlib.pyplot as plt
-import seaborn as sns
+### 1. Baseline Architectures 
+* **Lexical Heuristic Baseline:** Evaluates traditional static triggers (e.g., presence of `@` symbols or raw IP addresses). While ultra-lightweight, it suffers from catastrophic **Recall deficiency (0.14)**, letting 86% of actual threats bypass security barriers.
+* **LogReg Char N-gram Baseline:** A heavy character-level tokenization engine utilizing Logistic Regression. While highly accurate (0.99 F1), its massive memory footprint and token explosion make it structurally non-viable for sub-2ms microservice restrictions.
 
-# Generate zero-leakage numeric correlation matrix
-plt.figure(figsize=(30, 30))
-corr_matrix = df.corr(numeric_only=True)
-sns.heatmap(
-    corr_matrix, 
-    annot=True, 
-    cmap="coolwarm", 
-    fmt=".2f",
-    annot_kws={"size": 8},
-    linewidths=0.5
-)
-plt.title("Correlation Matrix", fontsize=16)
-plt.tight_layout()
-plt.savefig("reports/korelasyon_matrisi.jpg", format="jpg", dpi=300, bbox_inches="tight")
-plt.show()
-```
+### 2. The V2 Champion (LightGBM + Platt Scaling)
+Our final production model combines an optimized **LightGBM Classifier** with **Platt Scaling (Sigmoid Calibration)**. It utilizes only the 14 lightweight structural metrics, ensuring extreme inference speed while aggressively forcing a minimum **95% Recall safety target** on the phishing class to minimize high-risk False Negatives.
 
-![Correlation Matrix](reports/korelasyon_matrisi.jpg)
+### 📊 Comprehensive Performance Matrix
+The following real-time experimental matrix illustrates the model evolution on the evaluation set:
 
-### Model Performance Benchmark (5-Fold Stratified CV)
-Evaluations are processed inside encapsulated Pipeline architectures using RobustScaler to ensure zero scaling leakage across training slices.
-
-| Model Algorithm | Accuracy | Precision | Recall | F1-Score |
-| :--- | :--- | :--- | :--- | :--- |
-| Random Forest | 0.9973 | 0.9989 | 0.9948 | 0.9968 |
-| XGBoost Classifier | 0.9972 | 0.9995 | 0.9940 | 0.9967 |
-| LightGBM Classifier | 0.9971 | 0.9994 | 0.9938 | 0.9966 |
-| Logistic Regression | 0.9923 | 0.9946 | 0.9875 | 0.9910 |
+| Model Architecture | Overall Accuracy | Phishing Precision | Phishing Recall | F1-Score | Production Feasibility |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+|  **Lexical Heuristic Baseline** | 0.68 | 0.83 | 0.14 | 0.24 | **High False Negative rate; misses 86% of actual threats.** |
+|  **LogReg Char N-gram Baseline** | 1.00 | 1.00 | 0.99 | 0.99 | **Overfits to token text; prone to Zero-Day blindspots & high RAM overhead.** |
+|  **LightGBM + Platt Scaling (V2)** | **0.98** | **1.00** | **0.96** | **0.98** | **Optimal balance of structural generalization and sub-2ms latency.)** |
 
 ### Hyperparameter Tuning via Optuna
-The champion Random Forest pipeline underwent a 20-trial advanced Bayesian optimization loop targeting maximum F1 score stabilization:
+The champion LightGBM engine underwent an automated Bayesian optimization loop:
+* **Optimal Space Found:**
+  ```json
+  {"learning_rate": 0.0904, "num_leaves": 69, "max_depth": 8, "min_child_samples": 100, "subsample": 0.9810}
+  ```
+* **Final Threshold Selected:** `0.9514` (Calculated dynamically to lock high-confidence edge protection).
 
-**Optimal Space Found:**
-```json
-{'n_estimators': 203, 'max_depth': 20, 'min_samples_split': 2, 'min_samples_leaf': 1, 'max_features': None}
-```
+Detailed dataset bias analysis and architectural constraints are fully documented inside [reports/model_card.md](reports/model_card.md).
 
-### SHAP Feature Importance (Model Explainability)
-The decision logic of the optimized Random Forest was interpreted using SHAP (SHapley Additive exPlanations). The following table shows the average absolute impact of each feature on the Phishing class prediction, along with the direction of influence.
-
-| Feature | Impact | Direction |
-| :--- | :--- | :--- |
-| IsHTTPS | 0.192142 | Legitimate |
-| LetterRatioInURL | 0.118793 | Legitimate |
-| SpacialCharRatioInURL | 0.113244 | Phishing |
-| DegitRatioInURL | 0.072867 | Phishing |
-| DomainLength | 0.053481 | Legitimate |
-| CharContinuationRate | 0.030527 | Phishing |
-| NoOfSubDomain | 0.024388 | Legitimate |
-| TLDLength | 0.013001 | Legitimate |
-| NoOfQMarkInURL | 0.002519 | Phishing |
-| NoOfEqualsInURL | 0.001684 | Phishing |
-| NoOfAmpersandInURL | 0.000080 | Phishing |
-| IsDomainIP | 0.000048 | Phishing |
-| HasObfuscation | 0.000010 | Phishing |
-| ObfuscationRatio | 0.000010 | Phishing |
-
-### SHAP Summary Plot
-The following plot visualizes the SHAP values across all samples, highlighting which features push the prediction toward Phishing (positive) or Legitimate (negative).
-
-![SHAP Summary Plot](reports/shap_summary.png)
+---
 
 ## Modular Directory Structure
 ```text
-phishing-detector/
+phishing-url-detection/
+├── .github/
+│   └── workflows/
+│       └── ci.yml          # GitHub Actions Automated CI Pipeline (Ruff + Pytest)
 ├── app/
-│   ├── __init__.py
-│   └── main.py            # FastAPI web server & Pydantic data schemas
-├── src/
-│   ├── __init__.py
-│   ├── config.py          # Unified feature configurations & static paths
-│   ├── data_pipeline.py   # Secure data parsing and stratified splitting
-│   ├── train.py           # Optuna engine & production pipeline training
-│   └── explain.py         # SHAP explainability engine
+│   └── main.py            # FastAPI Web Server (Accepts Raw URL Strings on-the-fly)
 ├── reports/
-│   ├── korelasyon_matrisi.jpg
-│   └── shap_summary.png
-├── Dockerfile             # Multi-layer lightweight deployment script
-├── requirements.txt       # Frozen environment dependencies
-└── README.md              # Project documentation manual
+│   └── model_card.md      # Production Model Card & Dataset Bias Documentation
+├── src/
+│   └── phishing_guard/    # Core Encapsulated Framework
+│       ├── data/          # Secure Data Splits (Domain-Grouped Split Walls)
+│       ├── features/      # Real-time Lexical Feature Extraction Engine
+│       └── modeling/      # Optuna Tuning, Platt Calibration & Artifact Managers
+├── requirements.txt       # Frozen Environment Dependencies
+├── run_experiment.py      # End-to-End Training, Tuning & Export Automation Script
+└── README.md              # Project Documentation Manual
 ```
+
+---
 
 ## Deployment & Execution Quickstart
 
 ### 1. Local Environment Provisioning
 ```bash
 # Clone the repository architecture
-git clone https://github.com/yourusername/phishing-url-detection.git
+git clone https://github.com
 cd phishing-url-detection
 
-# Install deterministic library instances
+# Install environment dependencies
 pip install -r requirements.txt
 ```
 
-### 2. Multi-Container Containerization (Docker)
-Build and spin up the optimized pipeline as an isolated production web server instance:
+### 2. Model Training, Calibration & Export
+To execute the automated Optuna optimization loop, validate safety thresholds, and dump the calibrated single artifact model into `models/`, execute:
 ```bash
-# Compile the secure Docker image recipe
-docker build -t phishing-detector:v1 .
-
-# Fire up the background daemon agent containerized on Port 8000
-docker run -d -p 8000:8000 --name phishing_api phishing-detector:v1
-
-# Inspect real-time operational engine logs
-docker logs -f phishing_api
+python run_experiment.py
 ```
 
-## Production API Consumption (Swagger Interactive UI)
-Once your container transitions to live execution status, open your browser and route to:
-**http://localhost:8000/docs**
+### 3. Production Microservice Execution
+To launch the ultra-fast FastAPI microservice natively via Uvicorn, execute:
+```bash
+uvicorn app.main:app --reload --port 8000
+```
 
-Submit structural input telemetry arrays via the `/predict` POST endpoint to unlock live, lightweight network safety classification verdicts under 2 milliseconds.
+---
 
-**Example Payload (Real Phishing URL Features)**
+## Swagger Interactive UI
+Once your server transitions to live execution status, navigate to: **http://localhost:8000/docs**
+
+The V2 API layer accepts a raw, un-preprocessed URL string, automatically extracts structural tokens on-the-fly, and serves mathematical prediction outputs in under 2 milliseconds.
+
+**Example Payload**
 ```json
 {
-  "DomainLength": 25.0,
-  "IsDomainIP": 0.0,
-  "TLDLength": 2.0,
-  "NoOfSubDomain": 2.0,
-  "IsHTTPS": 1.0,
-  "CharContinuationRate": 0.888888889,
-  "HasObfuscation": 0.0,
-  "ObfuscationRatio": 0.0,
-  "LetterRatioInURL": 0.562,
-  "DegitRatioInURL": 0.0,
-  "SpacialCharRatioInURL": 0.062,
-  "NoOfEqualsInURL": 0.0,
-  "NoOfQMarkInURL": 0.0,
-  "NoOfAmpersandInURL": 0.0
+  "url": "http://secure-bank-update-verify-checkpoint.com"
 }
 ```
 
@@ -184,24 +131,8 @@ Submit structural input telemetry arrays via the `/predict` POST endpoint to unl
 ```json
 {
   "is_phishing": true,
-  "threat_label": "Phishing",
-  "confidence_score": 0.9996
+  "probability": 0.9999381527163119,
+  "threshold": 0.9514251634442327,
+  "model_version": "v2.0.0"
 }
 ```
-
-## Critical Warning: Out-of-Distribution (OOD) Inference
-The model is trained on the statistical distribution of the PhiUSIIL dataset. It works reliably only when the input features resemble real URL attributes.
-
-If you send random, fabricated, or extreme values (e.g., DomainLength: 2222145, NoOfAmpersandInURL: 20 — values that are impossible in the real world), the input falls into the Out-of-Distribution (OOD) category. The model may then consciously default to the Legitimate class because it has never seen such extreme combinations during training.
-
-Always use feature vectors extracted from real URLs or derived from the dataset itself for testing.
-
-## Model Verification Snapshot
-The following results were obtained from a manually verified test using real samples from the PhiUSIIL dataset:
-
-| Sample Type | Real Label | Model Prediction | Confidence |
-| :--- | :--- | :--- | :--- |
-| Phishing URL | 1 | 1 | 0.9996 |
-| Legitimate URL | 0 | 0 | 0.9973 |
-
-This confirms that the API, model, and data pipeline are fully synchronized and production-ready.

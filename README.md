@@ -40,8 +40,8 @@ Instead of a global `RobustScaler`, a `ColumnTransformer` is used during trainin
 To justify the engineering complexity of the V2 pipeline, a strict benchmarking duel was executed across three evolving architectural tiers on a locked validation partition:
 
 ### 1. Baseline Architectures 
-* **Lexical Heuristic Baseline (Kural Tabanlı):** Evaluates traditional static triggers (e.g., presence of `@` symbols or raw IP addresses). While ultra-lightweight, it suffers from catastrophic **Recall deficiency (0.14)**, letting 86% of actual threats bypass security barriers.
-* **LogReg Char N-gram Baseline (Klasik ML):** A heavy character-level tokenization engine utilizing Logistic Regression. While highly accurate (0.99 F1), its massive memory footprint and token explosion make it structurally non-viable for sub-2ms microservice restrictions.
+* **Lexical Heuristic Baseline:** Evaluates traditional static triggers (e.g., presence of `@` symbols or raw IP addresses). While ultra-lightweight, it suffers from catastrophic **Recall deficiency (0.14)**, letting 86% of actual threats bypass security barriers.
+* **LogReg Char N-gram Baseline:** A heavy character-level tokenization engine utilizing Logistic Regression. While highly accurate (0.99 F1), its massive memory footprint and token explosion make it structurally non-viable for sub-2ms microservice restrictions.
 
 ### 2. The V2 Champion (LightGBM + Platt Scaling)
 Our final production model combines an optimized **LightGBM Classifier** with **Platt Scaling (Sigmoid Calibration)**. It utilizes only the 14 lightweight structural metrics, ensuring extreme inference speed while aggressively forcing a minimum **95% Recall safety target** on the phishing class to minimize high-risk False Negatives.

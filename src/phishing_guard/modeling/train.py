@@ -14,18 +14,16 @@ optuna.logging.set_verbosity(optuna.logging.WARNING)
 
 class URLOnlyLightGBMModel:
     """
-    Sadece ham URL stringinden 14 offline özellik türeten,
-    StratifiedGroupKFold cross-validation ve PR-AUC optimizasyonu içeren
-    gelişmiş Optuna motorlu LightGBM model sınıfı.
+    Advanced Optuna-powered LightGBM model class that derives 14 offline features from the raw URL string, incorporating StratifiedGroupKFold cross-validation and PR-AUC optimization.
     """
 
     def __init__(self, random_seed: int = 42, n_jobs: int = 1):
         self.random_seed = random_seed
-        self.n_jobs = n_jobs                # Paralel optimizasyon kontrolü
+        self.n_jobs = n_jobs                # Parallel optimization control
         self.best_params = None
-        self.best_value = None              # En iyi CV PR-AUC değeri
+        self.best_value = None              # Best CV PR-AUC value
         self.model = None
-        self.feature_columns = None         # Eğitim sırasında oluşturulan özellik isimleri
+        self.feature_columns = None         # Feature names created during training
 
     def optimize_and_fit(
         self,
@@ -35,36 +33,28 @@ class URLOnlyLightGBMModel:
         use_groups: bool = True
     ):
         """
-        Train seti içindeki domain gruplarını kaybetmeden StratifiedGroupKFold uygular,
-        Optuna Bayesian arama uzayında en yüksek PR-AUC skorunu veren parametreleri bulur.
-
-        Args:
-            X_train: URL ve group sütunlarını içeren DataFrame.
-            y_train: Hedef etiketler (1: phishing, 0: legitimate).
-            n_trials: Optuna deneme sayısı.
-            use_groups: Grup bilgisini kullanıp kullanmayacağı. Eğer `registrable_domain`
-                        sütunu yoksa False yapılabilir.
+        Applies StratifiedGroupKFold without losing domain groups in the training set, and finds the parameters that yield the highest PR-AUC score in the Optuna Bayesian search space. Args: X_train: DataFrame containing URL and group columns. y_train: Target labels (1: phishing, 0: legitimate). n_trials: Number of Optuna trials. use_groups: Whether to use group information. Can be set to False if theregistrable_domaincolumn is not present.
         """
-        print(f"🎯 Optuna Bayesian Arama Başlatılıyor ({n_trials} Trial, CV + Grup Korumalı)...")
+        print(f" Starting Optuna Bayesian Search ({n_trials} Trials, CV + Group Protected)...")
 
-        print("⏳ Eğitim verisinden 14 yapısal özellik türetiliyor...")
+        print(" Deriving 14 structural features from training data...")
         X_feats = extract_url_only_features(X_train, url_column="URL")
         self.feature_columns = X_feats.columns.tolist()
 
-        # Domain gruplarını al (opsiyonel)
+        # Get domain groups (optional)
         groups = None
         if use_groups and "registrable_domain" in X_train.columns:
             groups = X_train["registrable_domain"].to_numpy()
-            print("   → Domain grupları kullanılıyor (StratifiedGroupKFold).")
+            print(" → Using domain groups (StratifiedGroupKFold).")
         else:
-            print("   → Grup bilgisi yok veya kullanılmıyor, StratifiedKFold'a düşülecek.")
+            print(" → No group information or not using it, falling back to StratifiedKFold.")
 
         def objective(trial):
             params = {
                 "objective": "binary",
                 "boosting_type": "gbdt",
                 "random_state": self.random_seed,
-                "n_estimators": 1000,        # Erken durdurma işi devralacak
+                "n_estimators": 1000,        # Early stopping will handle this
                 "learning_rate": trial.suggest_float("learning_rate", 0.01, 0.1, log=True),
                 "num_leaves": trial.suggest_int("num_leaves", 31, 128),
                 "max_depth": trial.suggest_int("max_depth", 4, 10),
@@ -76,7 +66,7 @@ class URLOnlyLightGBMModel:
                 "verbose": -1
             }
 
-            # Grup bilgisi varsa StratifiedGroupKFold, yoksa normal StratifiedKFold
+            # Use StratifiedGroupKFold if groups exist, otherwise regular StratifiedKFold
             if groups is not None:
                 cv = StratifiedGroupKFold(n_splits=3, shuffle=True, random_state=self.random_seed)
                 splitter = cv.split(X_feats, y_train, groups=groups)
@@ -90,7 +80,7 @@ class URLOnlyLightGBMModel:
                 y_tr, y_va = y_train[train_idx], y_train[val_idx]
 
                 clf = lgb.LGBMClassifier(**params)
-                # DÜZELTME: eval_X ve eval_y liste olmadan doğrudan verilir
+                # FIX: eval_X and eval_y are passed directly, not as a list
                 clf.fit(
                     X_tr, y_tr,
                     eval_X=X_va,
@@ -99,13 +89,13 @@ class URLOnlyLightGBMModel:
                     callbacks=[lgb.early_stopping(stopping_rounds=30, verbose=False)]
                 )
 
-                # PR-AUC'yi sklearn'in average_precision_score ile hesapla
+                # Calculate PR-AUC using sklearn's average_precision_score
                 y_proba = clf.predict_proba(X_va)[:, 1]
                 pr_aucs.append(average_precision_score(y_va, y_proba))
 
             return np.mean(pr_aucs)
 
-        # Optuna çalışması
+        # Optuna 
         study = optuna.create_study(
             direction="maximize",
             sampler=TPESampler(seed=self.random_seed),
@@ -115,10 +105,10 @@ class URLOnlyLightGBMModel:
 
         self.best_params = study.best_params
         self.best_value = study.best_value
-        print(f"\n🏆 Optuna İle En İyi Parametreler Bulundu: {self.best_params}")
-        print(f"🥇 En İyi Validation PR-AUC Skoru: {self.best_value:.4f}")
+        print(f"\n Best Parameters Found by Optuna: {self.best_params}")
+        print(f" Best Validation PR-AUC Score: {self.best_value:.4f}")
 
-        # Final modeli tüm eğitim verisiyle eğit
+        # # Train the final model on all training data
         self.model = lgb.LGBMClassifier(
             **self.best_params,
             random_state=self.random_seed,
@@ -129,9 +119,7 @@ class URLOnlyLightGBMModel:
 
     def transform(self, X: pd.DataFrame, url_column: str = "URL") -> pd.DataFrame:
         """
-        Ham URL içeren DataFrame'i özellik matrisine dönüştürür.
-        Bu metodu kullanarak aynı veri üzerinde birden çok tahmin yapmadan önce
-        özellikleri bir kez hesaplayıp saklayabilirsiniz.
+        Transforms a DataFrame containing raw URLs into a feature matrix. Using this method, you can compute and cache the features once before making multiple predictions on the same data.
         """
         return extract_url_only_features(X, url_column=url_column)
 
@@ -142,10 +130,10 @@ class URLOnlyLightGBMModel:
         use_precomputed_features: bool = False
     ) -> np.ndarray:
         """
-        Tahmin yapar. Eğer X zaten özellik matrisi ise use_precomputed_features=True verin.
+        Makes predictions. Set use_precomputed_features=True if X is already a feature matrix.
         """
         if self.model is None:
-            raise ValueError("Model henüz eğitilmedi! Önce optimize_and_fit çalıştırın.")
+            raise ValueError("Model not trained yet! Run optimize_and_fit first.")
         if use_precomputed_features:
             X_features = X
         else:
@@ -159,10 +147,10 @@ class URLOnlyLightGBMModel:
         use_precomputed_features: bool = False
     ) -> np.ndarray:
         """
-        Olasılık tahmini yapar. Aynı şekilde özellik matrisi verilebilir.
+        Makes probability predictions. A feature matrix can be provided in the same way. 
         """
         if self.model is None:
-            raise ValueError("Model henüz eğitilmedi! Önce optimize_and_fit çalıştırın.")
+            raise ValueError("Model not trained yet! Run optimize_and_fit first.")
         if use_precomputed_features:
             X_features = X
         else:

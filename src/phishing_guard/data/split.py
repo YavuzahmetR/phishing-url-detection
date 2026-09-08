@@ -4,14 +4,13 @@ from sklearn.model_selection import GroupShuffleSplit
 
 def extract_registrable_domain(url: str) -> str:
     """
-    Bir URL'nin içinden sızıntıyı önleyecek ana kök domaini (registrable domain) çıkarır.
-    Örnek: '://example.com' -> 'example.com'
+    Extracts the registrable domain from a URL to prevent leakage. Example: '://example.com' -> 'example.com'
     """
     if not isinstance(url , str) or url.strip() == "":
         return "unknown_domain"
 
     ext = tldextract.extract(url)
-    # domain ve suffix'i birleştiriyoruz (örn: example + .com)
+    # Combine domain and suffix (e.g., example + .com)
     if ext.domain and ext.suffix:
         return f"{ext.domain}.{ext.suffix}"
     return "unknown_domain"
@@ -19,18 +18,17 @@ def extract_registrable_domain(url: str) -> str:
 
 def group_based_split(df: pd.DataFrame, url_column: str = "URL", target_column: str = "is_phishing", test_size: float= 0.2, random_seed: int = 42):
      """
-    Aynı domaine sahip URL'lerin train ve test setlerine sızmasını engelleyen
-    Grup Tabanlı Bölümleme (Grouped Train-Test Split) yapar.
+    Performs a Grouped Train-Test Split to prevent URLs from the same domain from leaking into both train and test sets.
     """
 
      processed_df = df.copy()
-      # 1. Her satır için registrable_domain sütununu türetiyoruz
+      # 1. Derive the registrable_domain column for each row
      processed_df["registrable_domain"] = processed_df[url_column].apply(extract_registrable_domain)
 
-      # 2. Scikit-learn'ün grupları birbirinden tamamen ayıran split nesnesini kuruyoruz
+      # 2. Set up scikit-learn's split object that completely separates groups
      gss = GroupShuffleSplit(n_splits=1, test_size=test_size, random_state=random_seed)
 
-     # 3. Bölme işlemini domain gruplarına göre tetikliyoruz
+     # 3. Trigger the split operation based on domain groups
 
      train_idx, test_idx = next(gss.split(X= processed_df, y=processed_df[target_column],  groups=processed_df["registrable_domain"]))
 

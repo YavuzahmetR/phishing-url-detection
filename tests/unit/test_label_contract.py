@@ -11,24 +11,25 @@ from src.phishing_guard.data.contract import (
 
 def test_transform_labels_correctly_inverts_semantics():
     """
-    KURAL: transform_labels fonksiyonu ham veri setini aldığında,
-    etiketleri V2 anayasasına uygun olarak kusursuzca tersine çevirmelidir.
+    RULE: When the transform_labels function receives the raw dataset,
+    it must flawlessly invert the labels according to the V2 contract.
     """
-
     raw_data = pd.DataFrame({
-        "URL" : ["http://phish.com", "http://legit.com"],
-        "Label" : [SOURCE_PHISHING, SOURCE_LEGITIMATE] # 0 ve 1
+        "URL": ["http://phish.com", "http://legit.com"],
+        "Label": [SOURCE_PHISHING, SOURCE_LEGITIMATE]  # 0 and 1
     })
-    # Gerçek fonksiyonumuzu çalıştırıyoruz
+    
+    # Run our actual function
     result_df = transform_labels(raw_data)
-    # 1. Kontrol: Eski 'Label' kolonu silinmiş mi?
+    
+    # 1. Check: Is the old 'Label' column removed?
     assert "Label" not in result_df.columns
     
-    # 2. Kontrol: Yeni 'is_phishing' kolonu eklenmiş mi?
+    # 2. Check: Is the new 'is_phishing' column added?
     assert "is_phishing" in result_df.columns
     
-    # 3. Kontrol: Orijinal 0 olan Phishing satırı içeride 1 olmuş mu?
+    # 3. Check: Did the original 0 (Phishing) become internal 1?
     assert result_df.loc[result_df["URL"] == "http://phish.com", "is_phishing"].values[0] == INTERNAL_PHISHING
     
-    # 4. Kontrol: Orijinal 1 olan Legitimate satırı içeride 0 olmuş mu?
+    # 4. Check: Did the original 1 (Legitimate) become internal 0?
     assert result_df.loc[result_df["URL"] == "http://legit.com", "is_phishing"].values[0] == INTERNAL_LEGITIMATE

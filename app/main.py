@@ -7,7 +7,6 @@ from src.phishing_guard.features.url_lexical import extract_url_only_features
 
 app = FastAPI(title="Phishing URL Guard V2")
 
-# Modeli yükle (environment variable ile override edilebilir)
 MODEL_PATH = os.getenv("MODEL_PATH", "models/url_only_lgb_v2.0.0.joblib")
 
 try:

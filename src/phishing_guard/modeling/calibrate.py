@@ -13,7 +13,7 @@ def calibrate_model(model, X_calib, y_calib, method='sigmoid'):
     Returns:
         calibrated_model: CalibratedClassifierCV instance (ensemble=False)
     """
-    # Scikit-learn v1.5+ ve üzeri için cv='prefit' yerine ensemble=False kullanılır
+
     calibrated = CalibratedClassifierCV(estimator=model, method=method, cv=None, ensemble=False)
     calibrated.fit(X_calib, y_calib)
     return calibrated

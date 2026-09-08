@@ -2,23 +2,24 @@ import pytest
 import pandas as pd
 import numpy as np
 from src.phishing_guard.modeling.baselines import LexicalHeuristicBaseline
-
 from src.phishing_guard.modeling.baselines import LogRegCharNgramBaseline
+
 
 def test_lexical_heuristic_baseline_rules():
     """
-    KURAL: LexicalHeuristicBaseline modelimiz:
-    1. İçinde '@' veya aşırı nokta olan URL'leri phishing (1) saymalıdır.
-    2. Düzgün ve şüpheli kelime içermeyen siteleri meşru (0) saymalıdır.
+    RULE: Our LexicalHeuristicBaseline model should:
+    1. Classify URLs containing '@' or excessive dots as phishing (1).
+    2. Classify clean, non-suspicious sites as legitimate (0).
     """
     model = LexicalHeuristicBaseline()
 
     mock_df = pd.DataFrame({
-        "URL" : ["http://paypal-update.com", 
-                "http://fake@bank.com",               
-                "http://malicious-site.com",   
-                "https://google.com"   
-                ]                   
+        "URL": [
+            "http://paypal-update.com",
+            "http://fake@bank.com",
+            "http://malicious-site.com",
+            "https://google.com"
+        ]
     })
 
     predictions = model.predict(mock_df)
@@ -31,13 +32,16 @@ def test_lexical_heuristic_baseline_rules():
 
 def test_logreg_char_ngram_baseline_fit_and_predict():
     """
-    KURAL: LogRegCharNgramBaseline modelimiz sahte bir veri setiyle beslendiğinde:
-    1. Hata vermeden fit (eğitim) olabilmelidir.
-    2. predict ve predict_proba adımlarını başarıyla tamamlamalıdır.
+    RULE: When our LogRegCharNgramBaseline model is fed with mock data:
+    1. It should be able to fit (train) without errors.
+    2. It should successfully complete predict and predict_proba steps.
     """
-
     train_df = pd.DataFrame({
-        "URL": ["http://paypal-login.com", "https://google.com", "http://secure-bank-update.net"]
+        "URL": [
+            "http://paypal-login.com",
+            "https://google.com",
+            "http://secure-bank-update.net"
+        ]
     })
     train_labels = np.array([1, 0, 1])
 
@@ -51,12 +55,8 @@ def test_logreg_char_ngram_baseline_fit_and_predict():
     predictions = model.predict(test_df)
     probabilities = model.predict_proba(test_df)
 
-
     assert isinstance(predictions, np.ndarray)
     assert len(predictions) == 1
 
-    assert probabilities.shape == (1,2)
+    assert probabilities.shape == (1, 2)
     assert np.isclose(probabilities.sum(), 1.0)
-
-
-

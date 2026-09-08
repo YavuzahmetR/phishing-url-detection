@@ -7,22 +7,20 @@ from sklearn.pipeline import Pipeline
 class LexicalHeuristicBaseline:
 
     """
-    Hiçbir yapay zekâ içermeyen, tamamen el yapımı kurallarla (heuristic)
-    URL analizi yapan ve phishing riski dönen temel referans modelimiz.
+    Our baseline reference model that uses no AI, relying entirely on hand-crafted heuristic rules to analyze URLs and return a phishing risk.
     """
     def __init__(self):
         self.suspicious_keywords = ["login","verify","secure","banking","update","paypal", "malicious"]
 
     def fit(self, X, y=None):
         """
-        Kural tabanlı bir model olduğu için herhangi bir eğitim (fit) yapmaz.
-        Scikit-learn API standartlarına uyum sağlamak için boş bir fonksiyon olarak bırakılmıştır.
+        As a rule-based model, it does not perform any training (fit). Left as an empty function to comply with scikit-learn API standards..
         """
         return self
     
     def predict_row(self, url: str) -> int:
         """
-        Tek bir URL stringini inceleyip 1 (Phishing) veya 0 (Legitimate) döner.
+        Inspects a single URL string and returns 1 (Phishing) or 0 (Legitimate).
         """
         if not isinstance(url, str):
             return 0
@@ -40,7 +38,7 @@ class LexicalHeuristicBaseline:
 
     def predict(self, X: pd.DataFrame, url_column: str= "URL") -> np.ndarray:
         """
-        Bir DataFrame dolusu URL'yi alır ve her biri için tahmin dizisi döner.
+        Takes a DataFrame of URLs and returns an array of predictions for each.
         """
         predictions = X[url_column].apply(self.predict_row)
         return predictions.to_numpy()
@@ -48,8 +46,7 @@ class LexicalHeuristicBaseline:
 
 class LogRegCharNgramBaseline:
     """
-    URL stringlerini karakter n-gramlarına (3'lü bloklar) ayıran TF-IDF ve
-    ardından sınıflandırma yapan Logistic Regression tabanlı akıllı baseline modelimiz.
+    Our intelligent baseline model based on Logistic Regression, which splits URLs into character n-grams (3-grams) using TF-IDF and then classifies them.
     """
     def __init__(self, random_seed: int=42):
         self.vectorizer = TfidfVectorizer(
@@ -70,8 +67,7 @@ class LogRegCharNgramBaseline:
     
     def fit(self, X: pd.DataFrame, y: np.ndarray, url_column: str = "URL"):
         """
-        Modeli train verisi üzerinde eğitir.
-        X içinden sadece URL kolonunu alıp TF-IDF kalıplarını öğrenir.
+        Trains the model on the training data. It takes only the URL column from X and learns the TF-IDF patterns.
         """
         url_series = X[url_column]
         self.pipeline.fit(url_series, y)
@@ -79,15 +75,14 @@ class LogRegCharNgramBaseline:
 
     def predict(self, X: pd.DataFrame, url_column: str = "URL") -> np.ndarray:
         """
-        Yeni URL'ler için 1 (Phishing) veya 0 (Legitimate) tahmini üretir.
+        Generates predictions (1 for Phishing, 0 for Legitimate) for new URLs.
         """
         url_series = X[url_column]
         return self.pipeline.predict(url_series)
 
     def predict_proba(self, X: pd.DataFrame, url_column: str = "URL") -> np.ndarray:
         """
-        Yeni URL'lerin phishing olma olasılığını (probability) döner.
-        Çıktının 1. indeksi positive class (phishing) olasılığıdır.
+        Returns the probability of new URLs being phishing. The 1st index of the output is the probability of the positive class (phishing).
         """
         url_series = X[url_column]
         return self.pipeline.predict_proba(url_series)

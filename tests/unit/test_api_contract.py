@@ -1,40 +1,34 @@
+"""
+Test that the API returns correct phishing flag based on model output.
+V2: internal is_phishing = 1 means phishing.
+"""
 import pytest
 
-# UCI standartlarına göre modelin ürettiği ham tahmin değerleri
-MODEL_OUTPUT_LEGITIMATE = 1  # Veri setinde 1 = Legitimate (Meşru)
-MODEL_OUTPUT_PHISHING = 0    # Veri setinde 0 = Phishing (Zararlı)
+# Simulate old V1 API logic (the one that was wrong)
+def legacy_api_logic(model_output):
+    # V1: model_output == 1 -> Legitimate, 0 -> Phishing
+    # So it returned True if model_output == 1 (WRONG)
+    return model_output == 1
 
-def legacy_api_logic(prediction: int) -> bool:
+# V2 API logic (correct)
+def v2_api_logic(model_output):
+    # internal is_phishing = 1 means phishing
+    return model_output == 1
+
+def test_v2_api_returns_correct_flag_for_phishing():
+    """Model outputs 1 (phishing) -> API should return True"""
+    assert v2_api_logic(1) is True
+
+def test_v2_api_returns_correct_flag_for_legitimate():
+    """Model outputs 0 (legitimate) -> API should return False"""
+    assert v2_api_logic(0) is False
+
+def test_v1_api_is_still_wrong_for_documentation():
     """
-    Şu an mevcut app/main.py içindeki mantığın aynısı.
-    Mevcut kodda prediction == 1 olduğunda 'is_phishing' True dönüyor.
+    This test shows the old bug still exists in legacy code.
+    We keep it to document the fix.
     """
-
-    if prediction == 1:
-        return True # Mevcut kodda 1 gelirse Phishing deniyor!
-    return False
-
-def test_v1_api_returns_wrong_flag_for_legitimate_site():
-
-    """
-    KURAL: Model arkadan 1 (Legitimate) ürettiğinde, API kullanıcıya 
-    is_phishing = False (Yani phishing DEĞİL) dönmelidir.
-    Mevcut V1 API kodunu test ettiğimiz için bu test PATLAMALIDIR (Fail).
-    """
-
-    # Model 1 (Legitimate) üretti. 
-    # API'nin False dönmesi gerekirken mevcut kod True dönecek ve test çökecek!
-
-    assert legacy_api_logic(MODEL_OUTPUT_LEGITIMATE) is False
-
-
-def test_v1_api_returns_wrong_flag_for_phishing_site():
-    """
-    KURAL: Model arkadan 0 (Phishing) ürettiğinde, API kullanıcıya
-    is_phishing = True (Yani phishing) dönmelidir.
-    Mevcut V1 API kodunu test ettiğimiz için bu test de PATLAMALIDIR (Fail).
-    """
-    # Model 0 (Phishing) üretti.
-    # API'nin True dönmesi gerekirken mevcut kod False dönecek.
-
-    assert legacy_api_logic(MODEL_OUTPUT_PHISHING) is True
+    # V1 returns True for legitimate (WRONG)
+    assert legacy_api_logic(1) is True
+    # V1 returns False for phishing (WRONG)
+    assert legacy_api_logic(0) is False

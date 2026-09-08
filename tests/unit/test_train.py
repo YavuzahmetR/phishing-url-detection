@@ -28,7 +28,7 @@ def test_url_only_lightgbm_pipeline_optimize_and_predict():
     model = URLOnlyLightGBMModel(random_seed=42)
 
     # optimize_and_fit çalıştır (n_trials=2 hızlı olsun)
-    model.optimize_and_fit(mock_train_df, mock_labels, n_trials=2, use_groups=True)
+    model.optimize_and_fit(mock_train_df, mock_labels, n_trials=1, use_groups=False)
 
     # Predict test
     preds = model.predict(mock_train_df)

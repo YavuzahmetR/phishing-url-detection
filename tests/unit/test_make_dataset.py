@@ -19,7 +19,7 @@ def test_prepare_frozen_splits_mathematics_and_leakage():
             "http://e.com", "http://f.com",
             "http://g.com", "http://h.com"
         ],
-        "Label": [0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1]  # UCI orijinal etiketleri
+        "label": [0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1]  # UCI orijinal etiketleri
     })
 
     # DÜZELTME: label_column = "Label" (büyük L) olmalı

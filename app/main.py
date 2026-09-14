@@ -13,9 +13,9 @@ try:
     artifact = joblib.load(MODEL_PATH)
     model = artifact['model']
     threshold = artifact['threshold']
-    print(f"✅ Model loaded from {MODEL_PATH}, threshold={threshold:.4f}")
+    print(f"Model loaded from {MODEL_PATH}, threshold={threshold:.4f}")
 except Exception as e:
-    print(f"❌ Failed to load model: {e}")
+    print(f"Failed to load model: {e}")
     model = None
     threshold = 0.5
 

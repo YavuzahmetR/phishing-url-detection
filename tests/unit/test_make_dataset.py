@@ -5,10 +5,10 @@ from src.phishing_guard.data.contract import transform_labels
 
 def test_prepare_frozen_splits_mathematics_and_leakage():
     """
-    KURAL: prepare_frozen_splits fonksiyonu çalıştırıldığında:
-    1. Veriyi 4 parçaya eksiksiz bölmelidir.
-    2. Bu 4 parçanın (Train, Calibration, Validation, Test) hiçbirinde
-       birbiriyle ortak tek bir registrable_domain bulunmamalıdır!
+    RULE: When the prepare_frozen_splits function is run:
+    1. It must split the data into 4 parts without any loss.
+    2. None of these 4 parts (Train, Calibration, Validation, Test) may share
+       a single common registrable_domain with another!
     """
     mock_data = pd.DataFrame({
         "URL": [
@@ -19,17 +19,17 @@ def test_prepare_frozen_splits_mathematics_and_leakage():
             "http://e.com", "http://f.com",
             "http://g.com", "http://h.com"
         ],
-        "label": [0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1]  # UCI orijinal etiketleri
+        "label": [0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1]  # Original UCI labels
     })
 
-    # DÜZELTME: label_column = "Label" (büyük L) olmalı
+    # CORRECTION: label_column = "Label" (capital L) should be used
     train, calib, val, test = prepare_frozen_splits(mock_data, random_seed=42)
 
-    # 1. Parçaların toplamı orijinal veriye eşit mi?
+    # 1. Does the sum of the parts equal the original data?
     total = len(train) + len(calib) + len(val) + len(test)
     assert total == len(mock_data)
 
-    # 2. Domain kesişimi var mı?
+    # 2. Is there any domain intersection?
     def get_domains(df):
         return set(df["registrable_domain"].unique())
 

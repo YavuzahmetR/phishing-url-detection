@@ -1,0 +1,41 @@
+{
+  "missing_url_existing_error_preserved": [
+    "TypeError",
+    "object of type 'float' has no len()"
+  ],
+  "feature_matrix_exact": {
+    "rows": 8,
+    "columns": 14
+  },
+  "label_mapping_exact_including_unknown_values": true,
+  "group_split_and_four_partitions_exact": true,
+  "baseline_predictions_probabilities_exact": true,
+  "real_lightgbm_one_trial_both_cv_modes": {
+    "False": {
+      "best_value": 0.5,
+      "exact": true
+    },
+    "True": {
+      "best_value": 0.5,
+      "exact": true
+    }
+  },
+  "calibration_probabilities_threshold_and_metrics_exact": true,
+  "artifact_roundtrip_metadata_predictions_exact": true,
+  "real_artifact_readonly_inference_exact": {
+    "rows": 5,
+    "version": "v2.0.0",
+    "threshold": 0.9514251634442327,
+    "probabilities": [
+      0.001110925790483701,
+      0.996488448531214,
+      0.9999637725549787,
+      0.9999737257672098,
+      0.9957375484876649
+    ],
+    "sha256": "6d5366d05b35bad92809f8fd3008f0b25dd16e18a430c94c1039df519611874c"
+  },
+  "coordinator_stdout_order_exact_with_fit_and_save_stubbed": true,
+  "tests_and_reports_byte_identical": 8,
+  "model_card_sha256": "a05df35ea9f5781615d240d02f1e300c5e46c491a30277628a7760f64dcf60c1"
+}

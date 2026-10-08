@@ -4,20 +4,29 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 
-class LexicalHeuristicBaseline:
 
+class LexicalHeuristicBaseline:
     """
     Our baseline reference model that uses no AI, relying entirely on hand-crafted heuristic rules to analyze URLs and return a phishing risk.
     """
+
     def __init__(self):
-        self.suspicious_keywords = ["login","verify","secure","banking","update","paypal", "malicious"]
+        self.suspicious_keywords = [
+            "login",
+            "verify",
+            "secure",
+            "banking",
+            "update",
+            "paypal",
+            "malicious",
+        ]
 
     def fit(self, X, y=None):
         """
         As a rule-based model, it does not perform any training (fit). Left as an empty function to comply with scikit-learn API standards..
         """
         return self
-    
+
     def predict_row(self, url: str) -> int:
         """
         Inspects a single URL string and returns 1 (Phishing) or 0 (Legitimate).
@@ -36,7 +45,7 @@ class LexicalHeuristicBaseline:
 
         return 0
 
-    def predict(self, X: pd.DataFrame, url_column: str= "URL") -> np.ndarray:
+    def predict(self, X: pd.DataFrame, url_column: str = "URL") -> np.ndarray:
         """
         Takes a DataFrame of URLs and returns an array of predictions for each.
         """
@@ -48,23 +57,19 @@ class LogRegCharNgramBaseline:
     """
     Our intelligent baseline model based on Logistic Regression, which splits URLs into character n-grams (3-grams) using TF-IDF and then classifies them.
     """
-    def __init__(self, random_seed: int=42):
+
+    def __init__(self, random_seed: int = 42):
         self.vectorizer = TfidfVectorizer(
-            analyzer="char",
-            ngram_range=(3,3),
-            max_features=10000
+            analyzer="char", ngram_range=(3, 3), max_features=10000
         )
         self.classifier = LogisticRegression(
-            max_iter= 1000,
-            random_state=random_seed,
-            class_weight="balanced"
+            max_iter=1000, random_state=random_seed, class_weight="balanced"
         )
 
-        self.pipeline = Pipeline(steps=[
-            ("vectorizer", self.vectorizer),
-            ("classifier", self.classifier)
-        ])
-    
+        self.pipeline = Pipeline(
+            steps=[("vectorizer", self.vectorizer), ("classifier", self.classifier)]
+        )
+
     def fit(self, X: pd.DataFrame, y: np.ndarray, url_column: str = "URL"):
         """
         Trains the model on the training data. It takes only the URL column from X and learns the TF-IDF patterns.
@@ -86,10 +91,3 @@ class LogRegCharNgramBaseline:
         """
         url_series = X[url_column]
         return self.pipeline.predict_proba(url_series)
-
-
-        
-
-
-
-    

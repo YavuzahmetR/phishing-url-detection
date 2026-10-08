@@ -1,0 +1,372 @@
+{
+  "date": "2026-10-09",
+  "scope": "Requested software-test/tool/package-initializer cleanup; scientific evaluation preserved",
+  "comparison_baseline": "Reviewed readability snapshot immediately before this cleanup",
+  "baseline_archive_sha256": "00b49858933518ce1a68e5e750634d1702983b0c4517bea9dc3d8bdba0f88254",
+  "removed_files": [
+    {
+      "path": "tests/unit/test_api_contract.py",
+      "reason": "Requested removal of software test suite",
+      "sha256": "6958dfe46985ab4478f56dc621a3c00878426eb3913e45ed1eb5f3ab5ac096bd"
+    },
+    {
+      "path": "tests/unit/test_baselines.py",
+      "reason": "Requested removal of software test suite",
+      "sha256": "ac8d534813242f9a01d028684b0b95eb77cc129941f81c6713e4d34ae0f71de9"
+    },
+    {
+      "path": "tests/unit/test_features.py",
+      "reason": "Requested removal of software test suite",
+      "sha256": "34bec05491ea7eea465efb41771b54d21d9214d15590b980393794161ccf5175"
+    },
+    {
+      "path": "tests/unit/test_label_contract.py",
+      "reason": "Requested removal of software test suite",
+      "sha256": "66b3e5dc8c5caf53dfd2fd8b830cdea9146385bd9f9a481256197600e66f69bb"
+    },
+    {
+      "path": "tests/unit/test_make_dataset.py",
+      "reason": "Requested removal of software test suite",
+      "sha256": "4219f7a09d9e2d7b01c618833155af4ea65479f78062f90d4507a4796b8573d8"
+    },
+    {
+      "path": "tests/unit/test_split.py",
+      "reason": "Requested removal of software test suite",
+      "sha256": "648d295ca27b1a41c0a83dc7b6e41a92dd9729185c2818cd1116bdb30a506354"
+    },
+    {
+      "path": "tests/unit/test_train.py",
+      "reason": "Requested removal of software test suite",
+      "sha256": "5c84eb5d6833a3d116681fb15e242d1ec7e20e585fb4bc8468d385be09ab86b7"
+    },
+    {
+      "path": "tests/unit/__pycache__/test_api_contract.cpython-312-pytest-9.1.1.pyc",
+      "reason": "Requested removal of software test suite",
+      "sha256": "e8cf3d1709b83e0dcdd49366c395b379b346b4ab7e4801df94951e1f8a8636ba"
+    },
+    {
+      "path": "tests/unit/__pycache__/test_baselines.cpython-312-pytest-9.1.1.pyc",
+      "reason": "Requested removal of software test suite",
+      "sha256": "3fb26f554faae319d97950eae345af73699a2325d19f1bfa450d9bdea4213ff3"
+    },
+    {
+      "path": "tests/unit/__pycache__/test_features.cpython-312-pytest-9.1.1.pyc",
+      "reason": "Requested removal of software test suite",
+      "sha256": "bedbd6d0bf5404ed2b4339a052578e589be9a555b827b7bbd6906274a20aaba5"
+    },
+    {
+      "path": "tests/unit/__pycache__/test_label_contract.cpython-312-pytest-9.1.1.pyc",
+      "reason": "Requested removal of software test suite",
+      "sha256": "7668fb14fc0b2bd7cff79150655046a33d754d56e383bb231e1e29145a63f46e"
+    },
+    {
+      "path": "tests/unit/__pycache__/test_make_dataset.cpython-312-pytest-9.1.1.pyc",
+      "reason": "Requested removal of software test suite",
+      "sha256": "d38f00e60631d42852e28d86b1be269093ab987cac65e1778c938cfd4456a3fe"
+    },
+    {
+      "path": "tests/unit/__pycache__/test_split.cpython-312-pytest-9.1.1.pyc",
+      "reason": "Requested removal of software test suite",
+      "sha256": "49968549e35f58257b1886f39bd923f59815cf2d9e414ec6f396cb4daccd46af"
+    },
+    {
+      "path": "tests/unit/__pycache__/test_train.cpython-312-pytest-9.1.1.pyc",
+      "reason": "Requested removal of software test suite",
+      "sha256": "1df752cf8d787bb35c2fd83747e2a85e6e38ddb2e0b646a8c85e6171b5ae9d1b"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "reason": "Obsolete pytest/Ruff-only CI after requested test-tool removal",
+      "sha256": "8ee62888fc0aa3d51fe152229ee265320ece536e6787cc9ab904ab0a0a81b167"
+    },
+    {
+      "path": "__pycache__/run_experiment.cpython-312.pyc",
+      "reason": "Generated Python or removed test-tool cache",
+      "sha256": "5cb01d4418d3613fe43c9bc448778b7a453906d9e8dfb596a4daeebddded2639"
+    },
+    {
+      "path": ".pytest_cache/.gitignore",
+      "reason": "Generated Python or removed test-tool cache",
+      "sha256": "3ed731b65d06150c138e2dadb0be0697550888a6b47eb8c45ecc9adba8b8e9bd"
+    },
+    {
+      "path": ".pytest_cache/CACHEDIR.TAG",
+      "reason": "Generated Python or removed test-tool cache",
+      "sha256": "37dc88ef9a0abeddbe81053a6dd8fdfb13afb613045ea1eb4a5c815a74a3bde4"
+    },
+    {
+      "path": ".pytest_cache/README.md",
+      "reason": "Generated Python or removed test-tool cache",
+      "sha256": "73fd6fccdd802c419a6b2d983d6c3173b7da97558ac4b589edec2dfe443db9ad"
+    },
+    {
+      "path": ".pytest_cache/v/cache/nodeids",
+      "reason": "Generated Python or removed test-tool cache",
+      "sha256": "d9f417b309539a5832cf98a7a1e434f278b26847af8759ab254a5c237423d0b1"
+    },
+    {
+      "path": "app/__pycache__/main.cpython-312.pyc",
+      "reason": "Generated Python or removed test-tool cache",
+      "sha256": "4919ff64659154f1b81f44040d25465ba165b8ac117567ac7b768396277df8e1"
+    },
+    {
+      "path": "scripts/__pycache__/run_experiment.cpython-312.pyc",
+      "reason": "Generated Python or removed test-tool cache",
+      "sha256": "667372fc5db239dce1542809cb3069613f7276259cab0ed85e26b132f82e9132"
+    },
+    {
+      "path": "src/phishing_guard/__pycache__/experiment.cpython-312.pyc",
+      "reason": "Generated Python or removed test-tool cache",
+      "sha256": "47ef2ed1a7a740d98d4b1cc9f587a32404b6a04ce67dbea738e64ffc8ec33423"
+    },
+    {
+      "path": "src/phishing_guard/data/__pycache__/contract.cpython-312.pyc",
+      "reason": "Generated Python or removed test-tool cache",
+      "sha256": "e884b805749fc864385eb02a4883f4ec68af2ba1f9fda89d4a4945fb1ec8a745"
+    },
+    {
+      "path": "src/phishing_guard/data/__pycache__/make_dataset.cpython-312.pyc",
+      "reason": "Generated Python or removed test-tool cache",
+      "sha256": "38e5f8a81a6889d6d6021f99705291c2d023713f0ee5088355aba392cc9233cc"
+    },
+    {
+      "path": "src/phishing_guard/data/__pycache__/split.cpython-312.pyc",
+      "reason": "Generated Python or removed test-tool cache",
+      "sha256": "f701730c4cb330267ebf492ec0def06e81b46bd1ff2741b3963487c64a56bc41"
+    },
+    {
+      "path": "src/phishing_guard/features/__pycache__/url_lexical.cpython-312.pyc",
+      "reason": "Generated Python or removed test-tool cache",
+      "sha256": "94ae724fbe0102ed095e2ee7c10a7befa52e4579f7c4b38e9ff717862e9780c0"
+    },
+    {
+      "path": "src/phishing_guard/modeling/__pycache__/artifact.cpython-312.pyc",
+      "reason": "Generated Python or removed test-tool cache",
+      "sha256": "d011d26356b239e8523a40a1163b04ae311f9ed051b9585f2063f78b182579da"
+    },
+    {
+      "path": "src/phishing_guard/modeling/__pycache__/baselines.cpython-312.pyc",
+      "reason": "Generated Python or removed test-tool cache",
+      "sha256": "d8d493f7bb5cb23288b6f1ad7c0fe1e8e0b1cfd875ddf2de07ac8eef72522f40"
+    },
+    {
+      "path": "src/phishing_guard/modeling/__pycache__/calibrate.cpython-312.pyc",
+      "reason": "Generated Python or removed test-tool cache",
+      "sha256": "54bf849c4dee655f7469bd9c923b594f2a2cae6b2cc8623e3a62b15e760814eb"
+    },
+    {
+      "path": "src/phishing_guard/modeling/__pycache__/train.cpython-312.pyc",
+      "reason": "Generated Python or removed test-tool cache",
+      "sha256": "79daa3c65f3074cfb19483c1c28202b7200b8844da14083650d2fac2a78be0e7"
+    }
+  ],
+  "docker_files_found": [],
+  "package_initializer_files_remaining": [],
+  "software_test_files_remaining": [],
+  "runtime_source_changed": [],
+  "runtime_operations_changed": [],
+  "runtime_source_deleted": [],
+  "syntax_errors": [],
+  "protected_files": [
+    {
+      "path": "docs/HTTP_VERIFICATION.json",
+      "sha256": "e987f7fa8ed3548905d47690df18ec4fbd0717e8586cceff34b39add1f3a1c5f",
+      "unchanged": true
+    },
+    {
+      "path": "docs/VERIFICATION_RESULTS.json",
+      "sha256": "c7345e65ca448c3b6b5e59b1c947b1519db246f0abed0112702355520b19672b",
+      "unchanged": true
+    },
+    {
+      "path": "reports/model_card.md",
+      "sha256": "a05df35ea9f5781615d240d02f1e300c5e46c491a30277628a7760f64dcf60c1",
+      "unchanged": true
+    }
+  ],
+  "http_comparison": {
+    "exact_calls_match": true,
+    "call_count": 12,
+    "external_model_sha256": "6d5366d05b35bad92809f8fd3008f0b25dd16e18a430c94c1039df519611874c",
+    "calls": [
+      {
+        "method": "GET",
+        "path": "/health",
+        "input": null,
+        "status": 200,
+        "output": {
+          "status": "ok"
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/docs",
+        "input": null,
+        "status": 200,
+        "output": {
+          "swagger_ui": true
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/predict",
+        "input": {
+          "url": "https://example.com"
+        },
+        "status": 200,
+        "output": {
+          "is_phishing": true,
+          "probability": 0.9965848256754277,
+          "threshold": 0.9514251634442327,
+          "model_version": "v2.0.0"
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/predict",
+        "input": {
+          "url": "http://secure-bank-update-verify-checkpoint.com"
+        },
+        "status": 200,
+        "output": {
+          "is_phishing": true,
+          "probability": 0.9999381527163119,
+          "threshold": 0.9514251634442327,
+          "model_version": "v2.0.0"
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/predict",
+        "input": {
+          "url": "http://192.168.1.1/login"
+        },
+        "status": 200,
+        "output": {
+          "is_phishing": true,
+          "probability": 0.9999737257672098,
+          "threshold": 0.9514251634442327,
+          "model_version": "v2.0.0"
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/predict",
+        "input": {
+          "url": "https://example.com/@bank"
+        },
+        "status": 200,
+        "output": {
+          "is_phishing": true,
+          "probability": 0.9999407215947307,
+          "threshold": 0.9514251634442327,
+          "model_version": "v2.0.0"
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/predict",
+        "input": {
+          "url": ""
+        },
+        "status": 200,
+        "output": {
+          "is_phishing": true,
+          "probability": 0.99995895971046,
+          "threshold": 0.9514251634442327,
+          "model_version": "v2.0.0"
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/predict",
+        "input": {
+          "url": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        },
+        "status": 422,
+        "output": {
+          "detail": [
+            {
+              "type": "value_error",
+              "loc": [
+                "body",
+                "url"
+              ],
+              "msg": "Value error, URL too long",
+              "input": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+              "ctx": {
+                "error": {}
+              }
+            }
+          ]
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/predict",
+        "input": {},
+        "status": 422,
+        "output": {
+          "detail": [
+            {
+              "type": "missing",
+              "loc": [
+                "body",
+                "url"
+              ],
+              "msg": "Field required",
+              "input": {}
+            }
+          ]
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/predict",
+        "input": {
+          "url": 42
+        },
+        "status": 422,
+        "output": {
+          "detail": [
+            {
+              "type": "string_type",
+              "loc": [
+                "body",
+                "url"
+              ],
+              "msg": "Input should be a valid string",
+              "input": 42
+            }
+          ]
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/health",
+        "input": null,
+        "status": 200,
+        "output": {
+          "status": "ok"
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/predict",
+        "input": {
+          "url": "https://example.com"
+        },
+        "status": 503,
+        "output": {
+          "detail": "Model not loaded"
+        }
+      }
+    ]
+  },
+  "namespace_packages_discovered": null,
+  "limits": [
+    "A bounded CPU inference comparison is not full training or a latency benchmark",
+    "Model checkpoints are external, not bundled with the Git checkout",
+    "Scientific historical metrics were not recomputed"
+  ]
+}

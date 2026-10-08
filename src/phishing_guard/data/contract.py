@@ -10,9 +10,11 @@ INTERNAL_PHISHING = 1
 INTERNAL_LEGITIMATE = 0
 
 
-def transform_labels(df: pd.DataFrame, label_column: str = "Label"):
-    """
-    Transforms the original UCI dataset labels to our V2 standards. Source 0 (Phishing) -> Internal 1 (Phishing) Source 1 (Legitimate) -> Internal 0 (Legitimate) This ensures that when our model predicts '1', it truly means 'Phishing'.
+def transform_labels(df: pd.DataFrame, label_column: str = "Label") -> pd.DataFrame:
+    """Copy the data and replace the source label with ``is_phishing``.
+
+    Source 0 becomes 1 (phishing); every other value becomes 0. This existing
+    behavior is preserved, including its handling of unexpected labels.
     """
     # Create a copy to avoid modifying the original dataset
     processed_df = df.copy()
@@ -21,7 +23,11 @@ def transform_labels(df: pd.DataFrame, label_column: str = "Label"):
         raise KeyError(f"Column '{label_column}' not found in the dataset!")
 
     # Transformation logic: if source is 0, set internal to 1, otherwise 0
-    processed_df["is_phishing"] = processed_df[label_column].apply( lambda x: INTERNAL_PHISHING if x == SOURCE_PHISHING else INTERNAL_LEGITIMATE)
+    processed_df["is_phishing"] = processed_df[label_column].apply(
+        lambda label: (
+            INTERNAL_PHISHING if label == SOURCE_PHISHING else INTERNAL_LEGITIMATE
+        )
+    )
 
     processed_df = processed_df.drop(columns=[label_column])
 

@@ -1,8 +1,13 @@
-import numpy as np
 from sklearn.calibration import CalibratedClassifierCV
-from sklearn.metrics import precision_recall_curve, precision_score, recall_score, f1_score
+from sklearn.metrics import (
+    f1_score,
+    precision_recall_curve,
+    precision_score,
+    recall_score,
+)
 
-def calibrate_model(model, X_calib, y_calib, method='sigmoid'):
+
+def calibrate_model(model, X_calib, y_calib, method="sigmoid"):
     """
     Calibrate a fitted model using calibration partition.
     Args:
@@ -14,12 +19,14 @@ def calibrate_model(model, X_calib, y_calib, method='sigmoid'):
         calibrated_model: CalibratedClassifierCV instance (ensemble=False)
     """
 
-    calibrated = CalibratedClassifierCV(estimator=model, method=method, cv=None, ensemble=False)
+    calibrated = CalibratedClassifierCV(
+        estimator=model, method=method, cv=None, ensemble=False
+    )
     calibrated.fit(X_calib, y_calib)
     return calibrated
 
 
-def select_threshold(calibrated_model, X_val, y_val, recall_target = 0.95):
+def select_threshold(calibrated_model, X_val, y_val, recall_target=0.95):
     """
     Select threshold that meets a minimum phishing recall on validation set.
     Args:
@@ -41,12 +48,12 @@ def select_threshold(calibrated_model, X_val, y_val, recall_target = 0.95):
         if r >= recall_target and p > best_precision:
             best_precision = p
             best_threshold = t
-    
+
     # Compute metrics at threshold
     preds = (proba >= best_threshold).astype(int)
     metrics = {
-        'precision': precision_score(y_val, preds),
-        'recall': recall_score(y_val, preds),
-        'f1': f1_score(y_val, preds)
+        "precision": precision_score(y_val, preds),
+        "recall": recall_score(y_val, preds),
+        "f1": f1_score(y_val, preds),
     }
     return best_threshold, metrics
